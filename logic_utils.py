@@ -1,26 +1,51 @@
-def get_range_for_difficulty(difficulty: str):
-    """Return (low, high) inclusive range for a given difficulty."""
-    raise NotImplementedError("Refactor this function from app.py into logic_utils.py")
+"""
+Logic utility functions for Game Glitch Investigator.
+Contains pure functions for difficulty ranges, guess parsing, scoring, and hint generation.
+"""
+
+def get_range_for_difficulty(difficulty: str) -> tuple[int, int]:
+    """Returns (min, max) range for chosen difficulty."""
+    if difficulty == "Easy":
+        return 1, 20
+    elif difficulty == "Hard":
+        return 1, 500
+    return 1, 100
 
 
-def parse_guess(raw: str):
+def parse_guess(raw: str) -> tuple[bool, int | None, str | None]:
     """
-    Parse user input into an int guess.
-
-    Returns: (ok: bool, guess_int: int | None, error_message: str | None)
+    Parses string input to integer.
+    Rejects floats/decimals and non-numeric characters gracefully.
     """
-    raise NotImplementedError("Refactor this function from app.py into logic_utils.py")
+    if raw is None or raw.strip() == "":
+        return False, None, "Enter a guess."
+    
+    try:
+        if "." in raw:
+            return False, None, "Please enter a whole integer, not a decimal."
+        value = int(raw)
+        return True, value, None
+    except ValueError:
+        return False, None, "That is not a valid number."
 
 
-def check_guess(guess, secret):
+def check_guess(guess: int, secret: int) -> tuple[str, str]:
     """
-    Compare guess to secret and return (outcome, message).
-
-    outcome examples: "Win", "Too High", "Too Low"
+    Compares numerical guess to secret number and returns hint.
+    Fixes direction swap bug.
     """
-    raise NotImplementedError("Refactor this function from app.py into logic_utils.py")
+    if guess == secret:
+        return "Win", "🎉 Correct!"
+    elif guess > secret:
+        return "Lower", "📉 Go LOWER!"
+    else:
+        return "Higher", "📈 Go HIGHER!"
 
 
-def update_score(current_score: int, outcome: str, attempt_number: int):
-    """Update score based on outcome and attempt number."""
-    raise NotImplementedError("Refactor this function from app.py into logic_utils.py")
+def update_score(current_score: int, attempts: int, guess: int, secret: int) -> int:
+    """
+    Deducts points per incorrect attempt.
+    Fixes score inflation bug.
+    """
+    penalty = 10
+    return max(0, current_score - penalty)
