@@ -19,7 +19,7 @@ def parse_guess(raw: str) -> tuple[bool, int | None, str | None]:
     """
     if raw is None or raw.strip() == "":
         return False, None, "Enter a guess."
-    
+
     try:
         if "." in raw:
             return False, None, "Please enter a whole integer, not a decimal."
@@ -31,21 +31,20 @@ def parse_guess(raw: str) -> tuple[bool, int | None, str | None]:
 
 def check_guess(guess: int, secret: int) -> tuple[str, str]:
     """
-    Compares numerical guess to secret number and returns hint.
-    Fixes direction swap bug.
+    Compares numerical guess to secret number and returns (outcome, hint).
+    Outcomes: "Win", "Lower", "Higher".
     """
     if guess == secret:
         return "Win", "🎉 Correct!"
     elif guess > secret:
-        return "Too High", "📉 Go LOWER!"
+        return "Lower", "📉 Go LOWER!"
     else:
-        return "Too Low", "📈 Go HIGHER!"
+        return "Higher", "📈 Go HIGHER!"
 
 
 def update_score(current_score: int, attempts: int, guess: int, secret: int) -> int:
     """
     Deducts points per incorrect attempt.
-    Fixes score inflation bug.
     """
     penalty = 10
     return max(0, current_score - penalty)
