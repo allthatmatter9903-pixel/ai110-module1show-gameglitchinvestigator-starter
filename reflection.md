@@ -7,45 +7,36 @@ Answer each question in 3 to 5 sentences. Be specific and honest about what actu
 - What did the game look like the first time you ran it?
 - List at least two concrete bugs you noticed at the start  
   (for example: "the hints were backwards").
-
+When I first launched the Streamlit application using python -m streamlit run app.py, the interface rendered, but the underlying game logic contained multiple severe bugs. The most obvious issue was that the hint direction was completely reversed; guessing higher than the secret number generated a prompt telling me to "Go HIGHER!". Additionally, after a couple of guesses, string and integer comparisons caused logic errors where numbers were evaluated alphabetically rather than numerically. Finally, the scoring system was faulty, adding points for incorrect higher guesses during even attempt numbers instead of deducting points.
 **Bug Reproduction Log**
 
 Document at least 3 bugs you found. Add rows as needed.
 
-| Input | Expected Behavior | Actual Behavior | Console Output / Error |
-|-------|-------------------|-----------------|------------------------|
-| | | | |
-| | | | |
-| | | | |
+| Input | Expected Behavior  | Actual Behavior    | Console Output / Error |
+|-------|--------------------|--------------------|------------------------|
+| 67 |   Hint to say go lower  Hint said go higher | None
+100  |  Evaluates 100>36 | Evaluated incorrectly | None
+105 |   Score should decrease |   Score increased | None
 
 ---
 
 ## 2. How did you use AI as a teammate?
 
-- Which AI tools did you use on this project (for example: ChatGPT, Gemini, Copilot)?
-- Give one example of an AI suggestion that was correct (including what the AI suggested and how you verified the result).
-- Give one example of an AI suggestion you did not accept as written (including what the AI suggested, why you rejected or changed it, and how you verified your version). It does not have to be a suggestion that was wrong: over-engineered, out of scope, harder to read, or a poor fit for this codebase all count.
+Throughout this project, I used GitHub Copilot as an AI coding assistant to help refactor and isolate game logic. One correct suggestion was moving check_guess(), parse_guess(), and update_score() out of app.py into logic_utils.py, which I verified by checking that imports functioned correctly in Streamlit and running pytest. On the other hand, I rejected an AI suggestion that tried to introduce complex session-state handling and an external dictionary to store player statistics inside logic_utils.py. I discarded this because it over-engineered the simple helper functions and violated the scope of keeping game logic separated from Streamlit state management.
 
 ---
 
 ## 3. Debugging and testing your fixes
 
-- How did you decide whether a bug was really fixed?
-- Describe at least one test you ran (manual or using pytest)  
-  and what it showed you about your code.
-- Did AI help you design or understand any tests? How?
+I confirmed that bugs were resolved using a combination of playthroughs and automated testing with pytest. Specifically, I ran a unit test in tests/test_game_logic.py that passed a guess of 60 against a secret number of 50 to verify that check_guess() returned the expected lower hint and correctly identified the mismatch. The AI assistant helped design edge-case tests by generating pytest functions to verify handling of non-numeric string inputs and boundary inputs, ensuring invalid inputs were parsed smoothly without crashing the app.
 
 ---
 
 ## 4. What did you learn about Streamlit and state?
 
-- How would you explain Streamlit "reruns" and session state to a friend who has never used Streamlit?
-
+Streamlit operates on an execution model where the entire script re-runs from top to bottom every time a user interacts with a widget. Because standard variables reset on every script execution, st.session_state acts as a persistent memory dictionary across these reruns. Without storing variables like st.session_state.secret or st.session_state.attempts, the game would lose track of the target number and current score every time the user submits a guess.
 ---
 
 ## 5. Looking ahead: your developer habits
 
-- What is one habit or strategy from this project that you want to reuse in future labs or projects?
-  - This could be a testing habit, a prompting strategy, or a way you used Git.
-- What is one thing you would do differently next time you work with AI on a coding task?
-- In one or two sentences, describe how this project changed the way you think about AI generated code.
+One strategy I will reuse in future projects is writing unit tests for core logic in a separate helper module before integrating it with UI components. This project changed how I view AI-generated code: while AI speeds up boilerplate creation and refactoring, it frequently introduces subtle logic and type-casting bugs that require manual line-by-line inspection. In future tasks, I will carefully review git diffs and test function returns independently rather than assuming AI code works right out of the box.
