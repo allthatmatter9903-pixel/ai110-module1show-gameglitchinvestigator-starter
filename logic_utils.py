@@ -37,9 +37,9 @@ def check_guess(guess: int, secret: int) -> tuple[str, str]:
     if guess == secret:
         return "Win", "🎉 Correct!"
     elif guess > secret:
-        return "Lower", "📉 Go LOWER!"
+        return "Too High", "📉 Go LOWER!"
     else:
-        return "Higher", "📈 Go HIGHER!"
+        return "Too Low", "📈 Go HIGHER!"
 
 
 def update_score(current_score: int, attempts: int, guess: int, secret: int) -> int:
